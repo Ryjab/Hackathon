@@ -8,7 +8,6 @@ if (!is_writable(session_save_path())) {
 <?php
 
 include("dbConfig.php");
-//#####################################################################################################MegaPassWordDeLaMort
 $msg = "";
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $_POST["name"];
