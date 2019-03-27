@@ -1,0 +1,306 @@
+ICMPUSH(8)                                                                                 System Manager's Manual                                                                                 ICMPUSH(8)
+
+NAME
+       icmpush - ICMP packet builder
+
+SYNOPSIS
+       icmpush type [options] host
+
+DESCRIPTION
+       icmpush is a tool that builds ICMP packets fully customized from command line.
+
+       It supports the following ICMP error types: Redirect, Source Quench, Time Exceeded, Destination Unreach and Parameter Problem.
+
+       And the following ICMP information types: Address Mask Request, Timestamp, Information Request, Echo Request, Router Solicitation and Router Advertisement.
+
+       Is not of our concern to give a fully description of how ICMP protocol works, but the more knowledgement we have we can fully understand its management, use and posibilities of this tool.
+
+       The  quantity  of  arguments  needed can appear excessive but his own author reminds that some imperative data must be given through a command line for a fully adjustment to the protocol format on a
+       ICMP packet construction.
+
+       A long number of examples is given at the EXAMPLES section of this page that shows a real use of this program.
+
+OPTIONS
+       -h, --help
+              Help.
+
+       -V, --version
+              Program version.
+
+       -v, --verbose
+              Informative mode.
+
+       -vv, --more_verbose
+              More informative. Useful when debugging.
+
+       The ICMP type type can be any of the following below:
+
+       -du, --dest_unreach
+              Destination Unreach. IP packet couldn't be given.  This ICMP type is error.
+
+       -sq, --src_quench
+              Source Quench. IP packet is not given do a congestion on the net.  This ICMP type is error.
+
+       -red, --redirect
+              Redirect. Request to forward IP packets through another router.  This ICMP type is error.
+
+       -echo, --echo_request
+              Echo Request. Request sent to a host to receive an echo reply.  This ICMP type is information.
+
+       -rta, --router_advert address[/preference]
+              Router Advertisement. Router trasmits one or more routers with address address and preference preference.  If this is ommited, default preference 0 is given.  This ICMP type is information.
+
+       -rts, --router_solicit
+              Router Solicitation. Host requeriment for a message of one or more routers.  Like the previous, is a part of the messages exchange Router Discovery and this ICMP type is information.
+
+       -tx, --time_exc
+              Time Exceeded. Time Exceeded for an IP packet.  This ICMP type is error.
+
+       -param, --param_problem
+              Parameter Problem. Erroneous value on a variable of IP header.  This ICMP type is error.
+
+       -tstamp, --timestamp
+              Timestamp. Host request to receive the time of another host.  This ICMP type is information.
+
+       -info, --info_req
+              Information Request. Host request to receive an Info Reply from another host.  This ICMP type is information.
+
+       -mask, --mask_req
+              Address Mask Request. Used to find out a host network mask.  This ICMP type is information.
+
+       The options can be any of the following:
+
+       -sp, --spoof address
+              IP address to be used as the source of the ICMP packet.
+
+       -to, --timeout secs
+              Timeout in seconds to read the answers. Only valid on ICMPs of information type but the Router Advertisement type (-rta).  Default is 5 seconds. If 0 is given answers can not be read.
+
+       -n, --no_resolve
+              Don't use name resolution.
+
+       -lt, --lifetime secs
+              Lifetime in seconds of the router announcement. Only valid with Router Advertisement (-rta) type. 1800 seconds on default (30').
+
+       -gw, --gateway address
+              Route gateway address on an ICMP Redirect (-red).  On default will be the spoof address (-sp), if it has been specified, or the outgoing IP address if it has not been specified.
+
+       -dest, --route_dest address
+              Route destination address on an ICMP Redirect (-red). This is a required option when sending an ICMP Redirect.
+
+       -orig, --orig_host address
+              Original host within the IP header sent in the 64 bits data field of an ICMP error.  On default will be the same as the IP of the host that sends the ICMP packet.
+
+       -psrc, --port_src port
+              Source port (tcp or udp) within the IP header sent in the 64 bits data field of an ICMP error. 0 on default.
+
+       -pdst, --port_dest port
+              Destination port (tcp or udp) within the IP header sent in the 64 bits data field of an ICMP error. 0 on default.
+
+       -prot, --protocol icmp|tcp|udp
+              Protocol to be used within the IP header sent in the 64 bits data field of an ICMP error. Must be one of the three listed above. Tcp on default.
+
+       -id, --echo_id identificator
+              Echo identificator within the IP header sent in the 64 bits data field of an ICMP error when the IP header protocol of the 64 bits data field (-prot) is icmp. 0 on default.
+
+       -seq, --echo_seq sequence
+              Echo sequence number within the IP header sent in the 64 bits data field of an ICMP error when the IP header protocol of the 64 bits data field (-prot) is icmp. 0 on default.
+
+       -pat, --pattern pattern
+              Data pattern to send on an Echo Request (-echo).
+
+       -gbg, --garbage bytes|max
+              Number of garbage bytes that will be sent on any ICMP packet. With max the maximum possible will be sent.
+
+       -ptr, --pointer byte
+              Pointer to erroneus byte byte on an ICMP packet showing a parameter problem.  Valid only on Parameter Problem type (-param).
+
+       -c, --code code|num|max
+              ICMP code to send. Code code valid for Destination Unreach (-du), Redirect (-red) and Time Exceeded (-tx) types.
+
+              Numerical code can be specified for the ICMP types that doesn't have (Echo Request, Information Request, Address Mask Request, Router Solicitation, Router Advertisement, Source Quench, Param‐
+              eter Problem and Timestamp).
+
+              Using max an ICMP code bigger than the admited ones will be sent.
+
+              Next ICMP CODES section enumerates the valid code types.
+
+ICMP CODES
+       Valid codes used with Destination Unreach, Redirect y Time Exceeded types are,
+
+       - Used with Destination Unreach type (-du):
+
+       net-unreach (Net Unreachable) The destination net is unreacheable.
+
+       host-unreach (Host Unreachable) The destination host is unreacheable.
+
+       prot-unreach (Protocol Unreachable) desired protocol is unreacheable to destination host.
+
+       port-unreach (Port Unreachable) desired port is unreacheable to destination host.
+
+       frag-needed (Fragmentation Needed and Don't Fragment was Set) Shows that IP packet had to be fragmented because of its size but the sender did not allowed it because of DF (DON'T FRAGMENT) flag.
+
+       sroute-fail (Source Route Failed) could'nt follow the route indicated on IP packet.
+
+       net-unknown (Destination Network Unknown) Destination network is unknown.
+
+       host-unknown (Destination Host Unknown) Destination host unknown but network is.
+
+       host-isolated (Source Host Isolated) Can't reach destination host.
+
+       net-ano (Communication with Destination Network is Administratively Prohibited) access network is denied through firewall or similar on receiver side.
+
+       host-ano (Communication with Destination Host is Administratively Prohibited) access host is denied through firewall or similar on receiver side.
+
+       net-unr-tos (Destination Network Unreachable for Type of Service) indicates on destination network that the Type Of Service (TOS) applied for is not allowed.
+
+       host-unr-tos (Destination Host Unreachable for Type of Service) shows that destination host is unreachable with applied TOS.
+
+       com-admin-prohib (Communication Administratively Prohibited) a router can't forward a packet because of administrative filter.
+
+       host-precedence-viol (Host Precedence Violation) IP packet procedence is not allowed.
+
+       precedence-cutoff (Precedence cutoff in effect) a smaller IP packet precedence has tried to be sent over the minimous impossed by network's manager.
+
+       - To be used with Redirect type (-red):
+
+       net (Redirect Datagram for the Network) shows that destination is a network.
+
+       host (Redirect Datagram for the Host) shows that destination is a host.
+
+       serv-net (Redirect Datagram for the Type Of Service and Network) destination is a type of service and network.
+
+       serv-host (Redirect Datagram for the Type Of Service and Host) destination is a type of service and host.
+
+       and
+
+       - to be used with Time Exceeded type (-tx):
+
+       ttl (Time to Live exceeded in Transit) time is over on an IP's header packet.
+
+       frag (Fragment Reassembly Time Exceeded) could not put IP's packet fragment together again.
+
+RETURN CODES
+       icmpush can be easily used within shell scripts.  Program returns the following data to the shell:
+
+       Value  Meaning
+       -----  -----------
+       0      Finished program OK.
+       1      Incorrect argument number.
+       2      Unkown ICMP protocol.
+       3      Cannot create RAW socket type.
+       4      Erroneous ICMP packet.
+       5      Erroneous gateway.
+       6      Erroneous destination route.
+       7      Erroneous ICMP packet code.
+       8      Erroneous source host.
+       9      Error sending packet.
+       10     Protocol still not implemented.
+       11     Erroneous IP address or spoof host incorrect.
+       12     Could not save memory for the data_hdr union.
+       13     Erroneous IP address or packet destination host.
+       14     Unkown protocol.
+       16     Error reading RAW socket.
+       17     Error initializing signal handler SIGALARM.
+       18     Echo Request packet data too big.
+       19     Source port incorrect.
+       20     Destination port incorrect.
+       21     Incorrect timeout value.
+       22     Incorrect Echo ID.
+       23     Incorrect sequence number.
+       24     Erroneous Echo data.
+       25     IP_HDRINCL error.
+       26     Erroneous router address in Router Advertisement.
+       27     Incorrect garbage bytes number.
+       28     Incorrect ICMP pointer Parameter Problem.
+
+EXAMPLES
+       -  In  response to a packet send with TCP source port 100 and destination on port 90, we want to send and ICMP Redirect to asshole.es to modify its routing table with the following data: 10.12.12.12
+       as a gateway to the host death.es masking the packet source as if it was sent from infect.comx host:
+
+       icmpush -red -sp infect.comx -gw 10.12.12.12 -dest death.es -c host -prot tcp -psrc 100 -pdst 90 asshole.es
+
+       - In response to an ICMP packet Echo Request sent with Echo Request id 100 and Echo Request sequence number 90, we want to send an ICMP Redirect to the host hemorroids.es to modify its routing table
+       with the following data: the host pizza.death as a gateway to the host death.es, masking the packet source as if iit was sent from infect.comx host.
+
+       icmpush -red -sp infect.comx -gw pizza.death -dest death.es -c host -prot icmp -id 100 -seq 90 hemorroids.es
+
+       - We want to send an ICMP packet Destination Unreach to the host 10.2.3.4 saying that our TCP port number 20 connected with his TCP port 2100, is unreachable.  We mask ourselves as host 10.1.1.1:
+
+       icmpush -du -sp 10.1.1.1 -c port-unreach -prot tcp -psrc 2100 -pdst 20 10.2.3.4
+
+       -  We  want  to  send an ICMP packet Destination Unreach to host 10.2.3.4 saying that the host inferno.hell and its TCP port 69, connected with his port TCP 666 in unreacheable. We mask ourselves as
+       gateway router.comx:
+
+       icmpush -du -sp router.comx -c host-unreach -prot tcp -psrc 666 -pdst 69 -orig inferno.hell 10.2.3.4
+
+       - We want to send a packet ICMP Source Quench to host ldg02.hell in response to a packet destinated to host ldg00 with UDP protocol, source port 100 and destination port 200. We  mask  ourselves  as
+       gateway 10.10.10.1:
+
+       icmpush -sq -sp 10.10.10.1 -prot udp -psrc 100 -pdst 200 -orig ldg00 ldg02.hell
+
+       -  We  want  to  send an ICMP packet Time Exceeded to host ldg02.hell in response to a packet destinated to host ldg00 with UDP protocol, source port 100 and destination port 200. We mask as gateway
+       ldg04.hell:
+
+       icmpush -tx -sp ldg04.hell -c frag -prot udp -psrc 100 -pdst 200 -orig ldg00 ldg02.hell
+
+       - We want to send an ICMP packet Address Mask Request and wait 10 seconds to see the replies. We mask the packet with source address of 10.2.3.4 and we send it to the address 10.0.1.255:
+
+       icmpush -mask -sp 10.2.3.4 -to 10 10.0.1.255
+
+       - We want to send an ICMP packet Timestamp to host sepultura.hell.  We mask the packet as if it were send from host 10.2.3.1. We use the default timeout (5 seconds):
+
+       icmpush -tstamp --spoof 10.2.3.1 sepultura.hell
+
+       - We want to send an ICMP packet Information Request to host voucher.hell.  The source address will be our own IP address, and the timeout will be 20 seconds:
+
+       icmpush -info -to 20 voucher.hell
+
+       - We want to send an ICMP packet Router Solicitation to host lazy.hell. The source address will be our own IP address and the timeout will be 20 seconds:
+
+       icmpush -rts --timeout 20 lazy.hell
+
+       - We want to send an ICMP packet Echo Request to host lazy.hell with the data pattern 'MyNameIsGump'. The source address will be our own IP address and the timeout to read the data will  be  2  sec‐
+       onds:
+
+       icmpush -echo -data MyNameIsGump -to 2 lazy.hell
+
+       - We want to send ICMP packet Echo Request to 10.12.0.255 with the following data pattern: and we do not want to read the answers:
+
+       icmpush -echo -sp 192.168.0.255 -data 'D E A T H' -to 0 192.168.0.255
+
+       - We want to send an ICMP packet Destination Unreach to host destination.death but sending it with an ICMP code bigger to the legal ones adding also 60K of garbage data:
+
+       icmpush -du -c max -gbg 60000 destination.death
+
+       - We want to send an ICMP Router Advertisement to host death.es, saying that the routers to use are: router1.xtc with preference 20, router2.xtc with preference 50 and router3.xtc with default pref‐
+       erence (0). We mask ourselves as fatherouter.xtc
+
+       icmpush -rta router1.xtc/20 -rta router2.xtc/50 -rta router3.xtc -sp fatherouter.xtc death.es
+
+       - We send an ICMP Parameter Problem to host misery.es saying that the packet sent from the host hick.org with udp protocol, source port 13 and destination port 53, has an error on the IP header byte
+       13. We will also add all garbage bytes as possible:
+
+       icmpush -sp hick.org -param -ptr 13 -prot udp -psrc 13 -pdest 53 -gbg max misery.es
+
+       - We want to send an ICMP packet Timestamp to host www.hicks.org with code 38 instead of code (0) as usual:
+
+       icmpush -tstamp -c 38 www.hicks.org
+
+SEE ALSO
+       Postel, John, "Internet Control Message Protocol - DARPA Internet Program Protocol Specification", RFC 792, USC/Information Sciences Institute, September 1981.
+
+       Mogul, Jeffrey and John Postel, "Internet Standard Subnetting Procedure", RFC 950, Stanford, USC/Information Sciences Institute, August 1985.
+
+       Braden, Robert, "Requeriments for Internet Hosts - Communication Layers", RFC 1122, USC/Information Sciences Institute, October 1989.
+
+       Deering, Stephen, "ICMP Router Discovery Messages", RFC 1256, Xerox PARC, September 1991.
+
+       Baker, Fred, "Requeriments for IP Version 4 Routers", RFC 1812, Cisco Systems, June 1995.
+
+       The Linux source code, everything referent to network code and to ICMP protocol.
+
+AUTHOR
+       Slayer <tcpbgp@softhome.net>
+
+icmpush v2.2                                                                                  February 22, 1999                                                                                    ICMPUSH(8)
