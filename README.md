@@ -1,2 +1,3 @@
-# basic-sample-php-template-example
-Explanation for organizing the file structure
+Hello,
+
+You will also find a doc folder on server that was not upload on Github.
